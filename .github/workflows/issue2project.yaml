@@ -6,18 +6,22 @@ on:
 jobs:
   track-issue-dates:
     runs-on: ubuntu-latest
+    environment: project-env
+    
     steps:
       - uses: actions/checkout@v4
       
       - name: Set start date when issue is opened
         if: github.event.action == 'opened'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT }}  # GITHUB_TOKEN 대신 PAT 사용
           ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
         run: |
           TODAY=$(date -u +"%Y-%m-%d")
+          PROJECT_ID="${{ vars.PROJECT_ID }}"
           
-          # GitHub API query to update project item's start date
+          echo "Using Project ID: ${PROJECT_ID}"
+          
           gh api graphql -f query='
             mutation (
               $project_id: ID!
@@ -27,7 +31,7 @@ jobs:
               updateProjectV2ItemFieldValue(input: {
                 projectId: $project_id
                 itemId: $item_id
-                fieldId: "PVTF_lAHOBzKH4s4AouiozggQEAE"  # Default Start Date field ID
+                fieldId: "PVTF_lAHOBzKH4s4AouiozggQEAE"
                 value: { date: $date }
               }) {
                 projectV2Item {
@@ -35,19 +39,21 @@ jobs:
                 }
               }
             }' \
-            -f project_id="${{ secrets.PROJECT_ID }}" \
+            -f project_id="${PROJECT_ID}" \
             -f item_id="${ISSUE_NODE_ID}" \
             -f date="${TODAY}"
             
       - name: Set end date when issue is closed
         if: github.event.action == 'closed'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT }}  # GITHUB_TOKEN 대신 PAT 사용
           ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
         run: |
           TODAY=$(date -u +"%Y-%m-%d")
+          PROJECT_ID="${{ vars.PROJECT_ID }}"
           
-          # GitHub API query to update project item's target date
+          echo "Using Project ID: ${PROJECT_ID}"
+          
           gh api graphql -f query='
             mutation (
               $project_id: ID!
@@ -57,7 +63,7 @@ jobs:
               updateProjectV2ItemFieldValue(input: {
                 projectId: $project_id
                 itemId: $item_id
-                fieldId: "PVTF_lAHOBzKH4s4AouiozggQEAI"  # Default Target Date field ID
+                fieldId: "PVTF_lAHOBzKH4s4AouiozggQEAE"
                 value: { date: $date }
               }) {
                 projectV2Item {
@@ -65,6 +71,6 @@ jobs:
                 }
               }
             }' \
-            -f project_id="${{ secrets.PROJECT_ID }}" \
+            -f project_id="${PROJECT_ID}" \
             -f item_id="${ISSUE_NODE_ID}" \
             -f date="${TODAY}"
