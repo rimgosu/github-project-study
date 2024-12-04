@@ -11,14 +11,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+          
       - name: Set start date when issue is opened
         if: github.event.action == 'opened'
         env:
-          GH_TOKEN: ${{ secrets.PAT }}  # GITHUB_TOKEN 대신 PAT 사용
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
           ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
         run: |
           TODAY=$(date -u +"%Y-%m-%d")
-          PROJECT_ID="${{ vars.PROJECT_ID }}"
           
           echo "Using Project ID: ${PROJECT_ID}"
           
@@ -46,11 +53,11 @@ jobs:
       - name: Set end date when issue is closed
         if: github.event.action == 'closed'
         env:
-          GH_TOKEN: ${{ secrets.PAT }}  # GITHUB_TOKEN 대신 PAT 사용
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
           ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
         run: |
           TODAY=$(date -u +"%Y-%m-%d")
-          PROJECT_ID="${{ vars.PROJECT_ID }}"
           
           echo "Using Project ID: ${PROJECT_ID}"
           
