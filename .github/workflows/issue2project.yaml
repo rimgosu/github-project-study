@@ -35,7 +35,7 @@ jobs:
                 }
               }
             }' \
-            -f project_id="${{ env.PROJECT_ID }}" \
+            -f project_id="${{ secrets.PROJECT_ID }}" \
             -f item_id="${ISSUE_NODE_ID}" \
             -f date="${TODAY}"
             
@@ -65,6 +65,6 @@ jobs:
                 }
               }
             }' \
-            -f project_id="${{ env.PROJECT_ID }}" \
+            -f project_id="${{ secrets.PROJECT_ID }}" \
             -f item_id="${ISSUE_NODE_ID}" \
             -f date="${TODAY}"
