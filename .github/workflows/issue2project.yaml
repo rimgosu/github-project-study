@@ -27,7 +27,7 @@ jobs:
               updateProjectV2ItemFieldValue(input: {
                 projectId: $project_id
                 itemId: $item_id
-                fieldId: "PVTF_lADOAHOBmE4AAAAAJrY"  # Default Start Date field ID
+                fieldId: "PVTF_lAHOBzKH4s4AouiozggQEAE"  # Default Start Date field ID
                 value: { date: $date }
               }) {
                 projectV2Item {
@@ -57,7 +57,7 @@ jobs:
               updateProjectV2ItemFieldValue(input: {
                 projectId: $project_id
                 itemId: $item_id
-                fieldId: "PVTF_lADOAHOBmE4AAAAAJrY"  # Default Target Date field ID
+                fieldId: "PVTF_lAHOBzKH4s4AouiozggQEAI"  # Default Target Date field ID
                 value: { date: $date }
               }) {
                 projectV2Item {
