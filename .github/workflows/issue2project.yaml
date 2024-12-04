@@ -1,0 +1,74 @@
+name: Issue Date Tracker
+on:
+  issues:
+    types: [opened, closed]
+  
+jobs:
+  track-issue-dates:
+    runs-on: ubuntu-latest
+    environment: project-env
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set start date when issue is opened
+        if: github.event.action == 'opened'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+        run: |
+          TODAY=$(date -u +"%Y-%m-%d")
+          
+          # GitHub API query to update project item's start date
+          gh api graphql -f query='
+            mutation (
+              $project_id: ID!
+              $item_id: ID!
+              $date: Date!
+            ) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $project_id
+                itemId: $item_id
+                fieldId: "PVTF_lADOAHOBmE4AAAAAJrY"
+                value: { date: $date }
+              }) {
+                projectV2Item {
+                  id
+                }
+              }
+            }' \
+            -f project_id="${PROJECT_ID}" \
+            -f item_id="${ISSUE_NODE_ID}" \
+            -f date="${TODAY}"
+            
+      - name: Set end date when issue is closed
+        if: github.event.action == 'closed'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
+          PROJECT_ID: ${{ vars.PROJECT_ID }}
+        run: |
+          TODAY=$(date -u +"%Y-%m-%d")
+          
+          # GitHub API query to update project item's target date
+          gh api graphql -f query='
+            mutation (
+              $project_id: ID!
+              $item_id: ID!
+              $date: Date!
+            ) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $project_id
+                itemId: $item_id
+                fieldId: "PVTF_lADOAHOBmE4AAAAAJrY"
+                value: { date: $date }
+              }) {
+                projectV2Item {
+                  id
+                }
+              }
+            }' \
+            -f project_id="${PROJECT_ID}" \
+            -f item_id="${ISSUE_NODE_ID}" \
+            -f date="${TODAY}"
