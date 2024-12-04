@@ -6,8 +6,6 @@ on:
 jobs:
   track-issue-dates:
     runs-on: ubuntu-latest
-    environment: project-env
-    
     steps:
       - uses: actions/checkout@v4
       
@@ -16,7 +14,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
-          PROJECT_ID: ${{ vars.PROJECT_ID }}
         run: |
           TODAY=$(date -u +"%Y-%m-%d")
           
@@ -30,7 +27,7 @@ jobs:
               updateProjectV2ItemFieldValue(input: {
                 projectId: $project_id
                 itemId: $item_id
-                fieldId: "PVTF_lADOAHOBmE4AAAAAJrY"
+                fieldId: "PVTF_lADOAHOBmE4AAAAAJrY"  # Default Start Date field ID
                 value: { date: $date }
               }) {
                 projectV2Item {
@@ -38,7 +35,7 @@ jobs:
                 }
               }
             }' \
-            -f project_id="${PROJECT_ID}" \
+            -f project_id="${{ env.PROJECT_ID }}" \
             -f item_id="${ISSUE_NODE_ID}" \
             -f date="${TODAY}"
             
@@ -47,7 +44,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
-          PROJECT_ID: ${{ vars.PROJECT_ID }}
         run: |
           TODAY=$(date -u +"%Y-%m-%d")
           
@@ -61,7 +57,7 @@ jobs:
               updateProjectV2ItemFieldValue(input: {
                 projectId: $project_id
                 itemId: $item_id
-                fieldId: "PVTF_lADOAHOBmE4AAAAAJrY"
+                fieldId: "PVTF_lADOAHOBmE4AAAAAJrY"  # Default Target Date field ID
                 value: { date: $date }
               }) {
                 projectV2Item {
@@ -69,6 +65,6 @@ jobs:
                 }
               }
             }' \
-            -f project_id="${PROJECT_ID}" \
+            -f project_id="${{ env.PROJECT_ID }}" \
             -f item_id="${ISSUE_NODE_ID}" \
             -f date="${TODAY}"
